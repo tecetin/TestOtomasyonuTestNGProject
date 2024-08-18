@@ -2,7 +2,6 @@ package tests.US_001;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import utilities.Driver;
 
 
 public class TC_001 extends registrationBase{

@@ -122,7 +122,8 @@ public class ReusableMethods {
     public static String tumSayfaResmi(String name) {
         String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
         TakesScreenshot ts = (TakesScreenshot) Driver.getDriver();
-        String dosyaYolu = System.getProperty("user.dir") + "/target/Screenshots/" + name + tarih + ".png";
+        //String dosyaYolu = System.getProperty("user.dir") + "/target/Screenshots/" + name + tarih + ".png";
+        String dosyaYolu = "/target/Screenshots/" + name + tarih + ".png"; //extent rapora ekleyebilmek için proje içerisindeki dosya yolu alınmıştır
         try {
             FileUtils.copyFile(ts.getScreenshotAs(OutputType.FILE), new File(dosyaYolu));
         } catch (IOException e) {
