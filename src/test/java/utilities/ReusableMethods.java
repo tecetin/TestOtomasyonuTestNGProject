@@ -2,7 +2,6 @@ package utilities;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
-import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,14 +15,18 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class ReusableMethods {
+    private static final Random random = new Random();
     protected static ExtentReports extentReport;//-->raporlamayı başlatır
-    protected static ExtentHtmlReporter extentHtmlReporter;//-->Html formatında rapor oluşturur
+    //    protected static ExtentHtmlReporter extentHtmlReporter;//-->Html formatında rapor oluşturur
     protected static ExtentTest extentTest;
+    private static WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10));
 
     public static List<String> toStringList(List<WebElement> webElementList) {
         List<String> stringListe = new ArrayList<>();
@@ -62,13 +65,6 @@ public class ReusableMethods {
         Driver.getDriver().switchTo().alert().sendKeys(text);
     }
 
-    //DropDown VisibleText
-    /*
-        Select select2 = new Select(gun);
-        select2.selectByVisibleText("7");
-
-        //ddmVisibleText(gun,"7"); --> Yukarıdaki kullanım yerine sadece method ile handle edebilirim
-     */
     public static void ddmVisibleText(WebElement ddm, String secenek) {
         Select select = new Select(ddm);
         select.selectByVisibleText(secenek);
@@ -92,11 +88,12 @@ public class ReusableMethods {
         Driver.getDriver().switchTo().window(tumWindowHandles.get(sayi));
     }
 
+    //EXPLICIT WAIT METHODS
+
     //SwitchToWindow2
     public static void window(int sayi) {
         Driver.getDriver().switchTo().window(Driver.getDriver().getWindowHandles().toArray()[sayi].toString());
     }
-    //EXPLICIT WAIT METHODS
 
     //Visible Wait
     public static void visibleWait(WebElement element, int sayi) {
@@ -109,7 +106,6 @@ public class ReusableMethods {
     public static WebElement visibleWait(By locator, int sayi) {
         WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(sayi));
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-
     }
 
     //Alert Wait
@@ -118,29 +114,56 @@ public class ReusableMethods {
         wait.until(ExpectedConditions.alertIsPresent());
 
     }
+
     //Tüm Sayfa ScreenShot
-    public static String tumSayfaResmi(String name) {
-        String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
-        TakesScreenshot ts = (TakesScreenshot) Driver.getDriver();
-        //String dosyaYolu = System.getProperty("user.dir") + "/target/Screenshots/" + name + tarih + ".png";
-        String dosyaYolu = "/target/Screenshots/" + name + tarih + ".png"; //extent rapora ekleyebilmek için proje içerisindeki dosya yolu alınmıştır
+    public static void sayfaSS(String screenshotIsmi) {
+
+        //Sayfanın yüklenmesini bekle
+        Driver.getDriver().manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+
+        // 1.adim TakesScreenShot objesi olusturun
+        TakesScreenshot tss = (TakesScreenshot) Driver.getDriver();
+
+        File geciciDosya = tss.getScreenshotAs(OutputType.FILE);
+
+        //raporlara tarih etiketi ekleyelim
+        LocalDateTime ldt = LocalDateTime.now();
+        DateTimeFormatter format1 = DateTimeFormatter.ofPattern("_dd_MM_yy-HH_mm");
+        String tarihEtiketi = ldt.format(format1);
+
+        screenshotIsmi = screenshotIsmi.replaceAll("\\s", "");
+
+        String path = System.getProperty("user.dir") + "/target/Screenshots/"
+                + screenshotIsmi + tarihEtiketi + ".png";
+
+        File dosya = new File(path);
+
+        // Gecici dosyayi asil kaydetmek istedigimiz dosyaya kopyalayalim
         try {
-            FileUtils.copyFile(ts.getScreenshotAs(OutputType.FILE), new File(dosyaYolu));
+            FileUtils.copyFile(geciciDosya, dosya);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return dosyaYolu;
     }
-    public static String ekranResmi(WebDriver driver) {
-        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BASE64);
+
+    public static String sayfaSSBase64() {
+
+        return ((TakesScreenshot) Driver.getDriver()).getScreenshotAs(OutputType.BASE64);
     }
-    public static String WEResmi(WebElement element) {
+
+    public static String WEResmiBase64(WebElement element) {
+        wait.until(ExpectedConditions.visibilityOf(element));
         return element.getScreenshotAs(OutputType.BASE64);
     }
 
     //WebElement ScreenShot
-    public static void webElementResmi(WebElement element) {
-        String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
+    public static void WEResmi(WebElement element) {
+
+        //Elementin görünmesini bekle
+        WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.visibilityOf(element));
+
+        String tarih = new SimpleDateFormat("_dd_MM_yy_HH_mm").format(new Date());
         String dosyaYolu = "TestOutput/screenshot/webElementScreenshot" + tarih + ".png";
 
         try {
@@ -149,7 +172,6 @@ public class ReusableMethods {
             throw new RuntimeException(e);
         }
     }
-
 
     //WebTable
     public static void printData(int satir, int sutun) {
@@ -203,12 +225,36 @@ public class ReusableMethods {
         String attribute_Value = (String) js.executeScript("return document.getElementById('" + id + "')." + attributeName);
         System.out.println("Attribute Value: = " + attribute_Value);
     }
+    //Extent Report
+//    public static void rapor(String browser,String reportName){
+//        extentReport = new ExtentReports();
+//        String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
+//        String dosyaYolu = "target/extentReport/report"+tarih+".html";
+//        extentHtmlReporter = new ExtentHtmlReporter(dosyaYolu);
+//        extentReport.attachReporter(extentHtmlReporter);
+//        //Raporda gözükmesini istediğimiz bilgiler
+//        extentReport.setSystemInfo("Tester","Erol");
+//        extentReport.setSystemInfo("browser",browser);
+//        extentHtmlReporter.config().setDocumentTitle("ExtentReport");
+//        extentHtmlReporter.config().setReportName(reportName);
+//
+//    }
+//    public static void extentReport(){
+//        extentReport = new ExtentReports();
+//        String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
+//        String dosyaYolu = "target/extentReport/report"+tarih+".html";
+//        extentHtmlReporter = new ExtentHtmlReporter(dosyaYolu);
+//        extentReport.attachReporter(extentHtmlReporter);
+//        extentTest = extentReport.createTest("ErolDenemeTest");
+//        extentTest.addScreenCaptureFromBase64String(ReusableMethods.ekranResmi(Driver.getDriver()));
+//    }
+
     //File Upload Robot Class
-    public static void uploadFile(String dosyaYolu){
-        try{
+    public static void uploadFile(String dosyaYolu) {
+        try {
             bekle(3);
             StringSelection stringSelection = new StringSelection(dosyaYolu);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection,null);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
             Robot robot = new Robot();
             robot.keyPress(KeyEvent.VK_CONTROL);
             robot.keyPress(KeyEvent.VK_V);
@@ -218,33 +264,52 @@ public class ReusableMethods {
             robot.keyPress(KeyEvent.VK_ENTER);
             robot.keyRelease(KeyEvent.VK_ENTER);
             robot.delay(3000);
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
     }
-    //Extent Report
-    public static void rapor(String browser,String reportName){
-        extentReport = new ExtentReports();
-        String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
-        String dosyaYolu = "target/extentReport/report"+tarih+".html";
-        extentHtmlReporter = new ExtentHtmlReporter(dosyaYolu);
-        extentReport.attachReporter(extentHtmlReporter);
-        //Raporda gözükmesini istediğimiz bilgiler
-        extentReport.setSystemInfo("Tester","Erol");
-        extentReport.setSystemInfo("browser",browser);
-        extentHtmlReporter.config().setDocumentTitle("ExtentReport");
-        extentHtmlReporter.config().setReportName(reportName);
 
-    }
-    public static void extentReport(){
-        extentReport = new ExtentReports();
-        String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
-        String dosyaYolu = "target/extentReport/report"+tarih+".html";
-        extentHtmlReporter = new ExtentHtmlReporter(dosyaYolu);
-        extentReport.attachReporter(extentHtmlReporter);
-        extentTest = extentReport.createTest("ErolDenemeTest");
-        extentTest.addScreenCaptureFromBase64String(ReusableMethods.ekranResmi(Driver.getDriver()));
+    public static List<Integer> rastgeleSayilar(int min, int max, int count) {
+        if (count > (Math.abs(min - max) + 1)) {
+            count = Math.abs(min - max) + 1;
+        }
+
+        // Eğer min, max'tan büyükse, yer değiştirme yap
+        if (min > max) {
+            int temp = max;
+            max = min;
+            min = temp;
+        }
+
+        // Sayı aralığını bir listeye ekle
+        List<Integer> sayilar = new ArrayList<>();
+        for (int i = min; i <= max; i++) {
+            sayilar.add(i);
+        }
+
+        // Listeyi karıştır ve istenilen sayıda sayı döndür
+        Collections.shuffle(sayilar); //Öncelikle belirli bir aralıktaki tüm sayılar listeye eklenir, sonra liste karıştırılır ve istenilen sayıda ilk öğe seçilir.
+        return sayilar.subList(0, count);
     }
 
+    public static Set<Integer> rastgeleSayilarRandomClass(int min, int max, int count) {
+        if (count > (Math.abs(min - max) + 1)) {
+            throw new IllegalArgumentException("İstenilen sayı adedi, aralıktaki benzersiz sayıların sayısından fazla.");
+        }
+
+        // Eğer min, max'tan büyükse, yer değiştirme yap
+        if (min > max) {
+            int temp = max;
+            max = min;
+            min = temp;
+        }
+        Set<Integer> benzersizSayilar = new HashSet<>();
+
+        while (benzersizSayilar.size() < count) {
+            int sayi = random.nextInt((max - min) + 1) + min;
+            benzersizSayilar.add(sayi);
+        }
+        return benzersizSayilar;
+    }
 
 }
