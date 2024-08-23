@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <test verbose="2" preserve-order="true"
+          name="C:/Users/tugba/iCloudDrive/Unityverse_SDET_Egitim/UnityVerseTestNGProject/src/test/java/tests/US_004/TC_001.java">
+        <classes>
+            <class name="tests.US_001.TC_001">
+                ca
+                <methods>
+                    <include name="sepeteEkleTesti"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

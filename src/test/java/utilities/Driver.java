@@ -17,9 +17,6 @@ public class Driver {
 
         if (driver==null){
             switch (ConfigReader.getProperty("browser")){
-                case "chrome":
-                    driver = new ChromeDriver();
-                    break;
                 case "edge":
                     driver = new EdgeDriver();
                     break;
@@ -33,7 +30,7 @@ public class Driver {
                     driver = new ChromeDriver();
             }
             driver.manage().window().maximize();
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         }
         return driver;
     }

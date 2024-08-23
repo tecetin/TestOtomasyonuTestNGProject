@@ -5,15 +5,10 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
-import com.beust.jcommander.FuzzyMap;
-import org.testng.IResultMap;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.*;
 
-import javax.naming.Name;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -54,6 +49,7 @@ public abstract class ExtentReport {
         } else if (result.getStatus() == ITestResult.SUCCESS) { // Eğer test başarılı olduysa
             extentTest.pass("Test Case başarılı: " + result.getName());
         }
+        Driver.quitDriver();
     }
 
     @AfterTest(alwaysRun = true)
