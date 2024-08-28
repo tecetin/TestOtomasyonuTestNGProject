@@ -1,29 +1,46 @@
 package tests.US_001;
 
+import com.aventstack.extentreports.MediaEntityBuilder;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.testng.Assert;
 import org.testng.annotations.Test;
+import pages.TestOtomasyonu;
+import utilities.Driver;
+import utilities.ReusableMethods;
+
+import java.io.IOException;
 
 public class TC_002 extends registrationBase {
 
     @Test
-    public void positiveRegistration(){
+    public void positiveRegistration() throws IOException {
         //url` ye git
         //Sayfaya gittigini dogrula
         //Gorunur durumdaysa Account' a tikla
         //Gorunur durumdaysa Sign Up' a tikla
         //Register Now sayfasina gelindigi dogrula
 
+        /*REPORT*/
+        extentTest = extent.createTest("Kullanıcı kaydı testi",
+                "Kullanıcı Registration Now sayfasında geçerli bilgileri girerek kayıt yapılabildiğini doğrular");
+
+        /*REPORT*/
+        extentTest.info("Kullanıcı bilgileri oluşturulur");
         //fake kullanici bilgileri olustur ve propertiese kaydet
-        String[] bilgiler = faker();
+        String[] bilgiler = ReusableMethods.fakerKullaniciBilgileri();
         String firstname = bilgiler[0];
         String lastname = bilgiler[1];
         String email = bilgiler[2];
         String password = bilgiler[3];
 
+        /*REPORT*/
+        extentTest.info("Kullanıcı bilgi girilmesi gereken alanları eksiksiz ve geçerli bir şekilde doldurur.");
         //Tum bilgileri gecerli olarak gir
-        wait.until(ExpectedConditions.elementToBeClickable(testOtomasyonuPage.signupfirstName)).click();
+        to = new TestOtomasyonu();
+        actions = new Actions(Driver.getDriver());
+
+        wait.until(ExpectedConditions.elementToBeClickable(to.signupfirstName)).click();
         actions.sendKeys(firstname + Keys.TAB)
                 .sendKeys(lastname + Keys.TAB)
                 .sendKeys(email + Keys.TAB)
@@ -31,20 +48,27 @@ public class TC_002 extends registrationBase {
                 .sendKeys(password)
                 .perform();
 
+        /*REPORT*/
+        extentTest.info("Kullanıcı sign up butonuna tıklar.");
         //Gorunur durumdaysa Sign Up' a tikla
-        wait.until(ExpectedConditions.visibilityOf(testOtomasyonuPage.signUpButton));
-        actions.moveToElement(testOtomasyonuPage.signUpButton)
+        wait.until(ExpectedConditions.visibilityOf(to.signUpButton));
+        actions.moveToElement(to.signUpButton)
                 .click()
                 .perform();
 
         //Basarili kayit yapildigini test et
         boolean success = false;
         try {
-            wait.until(ExpectedConditions.visibilityOf(testOtomasyonuPage.successBox));
+            wait.until(ExpectedConditions.visibilityOf(to.successBox));
             success = true;
+            /*REPORT*/
+            extentTest.pass("Kullanıcı başarılı bir şekilde kayıt yapıldığını doğrular.",
+                    MediaEntityBuilder.createScreenCaptureFromBase64String(ReusableMethods.WEResmiBase64(to.successBox)).build());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            /*REPORT*/
+            extentTest.pass("Kullanıcı başarılı bir şekilde kayıt yapılamadığını görür.",
+                    MediaEntityBuilder.createScreenCaptureFromBase64String(ReusableMethods.sayfaSSBase64()).build());
         }
-        Assert.assertTrue(success, "Kayit yapilamadi.");
+        softAssert.assertTrue(success, "Kayit yapilamadi.");
     }
 }

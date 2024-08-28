@@ -1,0 +1,6 @@
+2024-08-27 21:21:57 INFO  C01_Log4j2:47 - Amazon sayfasına gidildi.
+2024-08-27 21:21:58 INFO  C01_Log4j2:51 - Başlığın Amazon içerdiği test edildi.
+2024-08-27 21:21:58 DEBUG C01_Log4j2:58 - Arama kutusu erişilebilir durumda
+2024-08-27 21:21:59 INFO  C01_Log4j2:60 - Arama kutusunda iphone aratıldı.
+2024-08-27 21:21:59 INFO  C01_Log4j2:68 - Başlığın Iphone içerdiği test edildi.
+2024-08-27 21:22:18 INFO  C01_Log4j2:88 - Tarayıcı kapatıldı.
