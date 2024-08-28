@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+//
 public class ReusableMethods {
     private static final Random random = new Random();
     protected static ExtentReports extentReport;//-->raporlamayı başlatır
