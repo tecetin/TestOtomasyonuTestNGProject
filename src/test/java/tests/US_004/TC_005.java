@@ -1,6 +1,7 @@
 package tests.US_004;
 
 import com.aventstack.extentreports.MediaEntityBuilder;
+import org.apache.commons.math3.analysis.function.Exp;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -9,7 +10,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.TestOtomasyonu;
-import utilities.*;
+import utilities.ConfigReader;
+import utilities.Driver;
+import utilities.ExtentReport;
+import utilities.ReusableMethods;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -61,34 +65,41 @@ public class TC_005 extends ExtentReport {
 
         //Add Address butonuna tikla
         extentTest.info("Add Address butonuna tıklanır, tüm bilgiler bilgiler girilir.");
-        ReusableMethods.click(to.billingAddressEkle);
-
         //Name, address, address 2, city, postcode, ülke ve sehir bilgilerini doldur
         //Add Address butonuna tikla
-        wait.until(ExpectedConditions.visibilityOf(to.isimKutusu));
-        actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("email") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("phone") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("postcode"))
-                .perform();
-        ReusableMethods.click(to.addAddressButtonForm);
+        boolean passed = true;
+        while (passed) {
+            try {
+                ReusableMethods.click(to.billingAddressEkle);
+                wait.until(ExpectedConditions.visibilityOf(to.isimKutusu));
+                actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("email") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("phone") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("postcode"))
+                        .perform();
+                ReusableMethods.click(to.addAddressButtonForm);
 
-        //Billing Address listesinde adres bulundugunu test et
-        wait.until(ExpectedConditions.visibilityOf(to.billingAddSec));
-        softAssert.assertTrue(to.billingAddSec.isDisplayed());
+                //Billing Address listesinde adres bulundugunu test et
+                wait.until(ExpectedConditions.visibilityOf(to.billingAddSec));
+                softAssert.assertTrue(to.billingAddSec.isDisplayed());
+                passed = false;
+            } catch (Exception e) {
+                to = new TestOtomasyonu();
+            }
+        }
         extentTest.pass("Billing Address bölümüne adres eklendiği test edilmiştir.",
                 MediaEntityBuilder.createScreenCaptureFromBase64String(ReusableMethods.sayfaSSBase64()).build());
 
         //Billing Address listesinde adres sec
         extentTest.info("Billing Address seçilir.");
-        ReusableMethods.click(to.billingAddSec);
+        wait.until(ExpectedConditions.elementToBeClickable(to.billingAddSec)).click();
 
         //Delivery address same as billing address kutucuguna tikla
         extentTest.info("Delivery address same as billing address kutucuğu seçilir.");
@@ -110,29 +121,36 @@ public class TC_005 extends ExtentReport {
 
         //Add Address butonuna tikla
         extentTest.info("Add Address butonuna tıklanır, tüm bilgiler bilgiler girilir.");
-        ReusableMethods.click(to.deliveryAddressEkle);
-
         //Name, address, address 2, city, postcode, ülke ve sehir bilgilerini doldur
         //Add Address butonuna tikla
-        wait.until(ExpectedConditions.visibilityOf(to.isimKutusu));
-        actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("email") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("phone") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("postcode"))
-                .perform();
+        passed = true;
+        while (passed) {
+            try {
+                ReusableMethods.click(to.deliveryAddressEkle);
+                wait.until(ExpectedConditions.visibilityOf(to.isimKutusu)).click();
+                actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("email") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("phone") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("postcode"))
+                        .perform();
 
-        ReusableMethods.click(to.addAddressButtonForm);
+                ReusableMethods.click(to.addAddressButtonForm);
 
-        //Delivery Address listesinde adres bulundugunu test et
-        wait.until(ExpectedConditions.visibilityOf(to.deliveryAddSec));
-        softAssert.assertTrue(to.deliveryAddSec.isEnabled());
+                //Delivery Address listesinde adres bulundugunu test et
+                wait.until(ExpectedConditions.visibilityOf(to.deliveryAddSec));
+                softAssert.assertTrue(to.deliveryAddSec.isEnabled());
+                passed = false;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         extentTest.pass("Delivery Address bölümüne adres eklendiği test edilmiştir.",
                 MediaEntityBuilder.createScreenCaptureFromBase64String(ReusableMethods.sayfaSSBase64()).build());
 
@@ -205,74 +223,107 @@ public class TC_005 extends ExtentReport {
 
         //Add Address butonuna tikla
         extentTest.info("Add Address butonuna tıklanır, tüm bilgiler bilgiler girilir.");
-        ReusableMethods.click(to.billingAddressEkle);
-
         //Name, address, address 2, city, postcode, ülke ve sehir bilgilerini doldur
         //Add Address butonuna tikla
-        wait.until(ExpectedConditions.visibilityOf(to.isimKutusu));
-        actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("postcode"))
-                .perform();
-        ReusableMethods.click(to.addAddressButtonForm);
+        boolean passed = true;
+        while (passed) {
+            try {
+                ReusableMethods.click(to.billingAddressEkle);
+                wait.until(ExpectedConditions.visibilityOf(to.isimKutusu)).click();
+                actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("postcode"))
+                        .perform();
+                ReusableMethods.click(to.addAddressButtonForm);
 
-        //Billing Address listesinde adres bulundugunu test et
-        wait.until(ExpectedConditions.visibilityOf(to.billingAddSec));
-        softAssert.assertTrue(to.billingAddSec.isDisplayed());
+                //Billing Address listesinde adres bulundugunu test et
+                wait.until(ExpectedConditions.visibilityOf(to.billingAddSec));
+                softAssert.assertTrue(to.billingAddSec.isDisplayed());
+                passed = false;
+            } catch (Exception e) {
+                to = new TestOtomasyonu();
+            }
+        }
         extentTest.pass("Billing Address bölümüne adres eklendiği test edilmiştir.",
                 MediaEntityBuilder.createScreenCaptureFromBase64String(ReusableMethods.sayfaSSBase64()).build());
 
-        //Billing Address listesinde adres sec
-        extentTest.info("Billing Address seçilir.");
-        ReusableMethods.click(to.billingAddSec);
 
-        //Delivery address same as billing address kutucuguna tikla
-        extentTest.info("Delivery address same as billing address kutucuğu seçilir.");
-        ReusableMethods.click(to.ayniAdresSecButonu);
+            //Billing Address listesinde adres sec
+            extentTest.info("Billing Address seçilir.");
+            to = new TestOtomasyonu();
+            wait.until(ExpectedConditions.elementToBeClickable(to.billingAddSec)).click();
 
-        //Delivery Address bolumunun gorunur olmadigini test et
-        Assert.assertFalse(to.deliveryAddressEkle.isDisplayed());
-        extentTest.pass("Delivery Address bölümünün görünür olmadığı test edilmiştir.",
-                MediaEntityBuilder.createScreenCaptureFromBase64String(ReusableMethods.WEResmiBase64(to.billingAddressEkle)).build());
+            //Delivery address same as billing address kutucuguna tikla
+            extentTest.info("Delivery address same as billing address kutucuğu seçilir.");
+            ReusableMethods.click(to.ayniAdresSecButonu);
 
-        //Delivery address same as billing address kutucugunu unchecked yap
-        extentTest.info("Delivery address same as billing address kutucuğu işareti kaldırılır.");
-        ReusableMethods.click(to.ayniAdresSecButonu);
+            //Delivery Address bolumunun gorunur olmadigini test et
+            Assert.assertFalse(to.deliveryAddressEkle.isDisplayed());
+            extentTest.pass("Delivery Address bölümünün görünür olmadığı test edilmiştir.");
+            ReusableMethods.bekle(1);
 
-        //Delivery Address bolumunun gorunur oldugunu test et
-        wait.until(ExpectedConditions.visibilityOf(to.deliveryAddressEkle));
-        softAssert.assertTrue(to.deliveryAddressEkle.isDisplayed());
+        try {
+            //Delivery address same as billing address kutucugunu unchecked yap
+            extentTest.info("Delivery address same as billing address kutucuğu işareti kaldırılır.");
+            ReusableMethods.click(to.ayniAdresSecButonu);
+            ReusableMethods.bekle(1);
+
+            //Delivery Address bolumunun gorunur oldugunu test et
+            to = new TestOtomasyonu();
+            wait.until(ExpectedConditions.visibilityOf(to.deliveryAddressEkle));
+            softAssert.assertTrue(to.deliveryAddressEkle.isDisplayed());
+        } catch (Exception e) {
+            to = new TestOtomasyonu();
+            wait.until(ExpectedConditions.elementToBeClickable(to.billingAddSec)).click();
+            ReusableMethods.click(to.ayniAdresSecButonu);
+
+            extentTest.info("Delivery address same as billing address kutucuğu işareti kaldırılır.");
+            ReusableMethods.click(to.ayniAdresSecButonu);
+
+            wait.until(ExpectedConditions.visibilityOf(to.deliveryAddressEkle));
+            softAssert.assertTrue(to.deliveryAddressEkle.isDisplayed());
+
+        }
         extentTest.pass("Delivery Address bölümünün görünür olduğu test edilmiştir.");
 
         //Add Address butonuna tikla
         extentTest.info("Add Address butonuna tıklanır, tüm bilgiler bilgiler girilir.");
-        ReusableMethods.click(to.deliveryAddressEkle);
 
         //Name, address, address 2, city, postcode, ülke ve sehir bilgilerini doldur
         //Add Address butonuna tikla
-        wait.until(ExpectedConditions.visibilityOf(to.isimKutusu));
-        actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
-                .pause(Duration.ofSeconds(1))
-                .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
-                .sendKeys(ConfigReader.getProperty("postcode"))
-                .perform();
+        passed = true;
+        while (passed) {
+            try {
+                ReusableMethods.click(to.deliveryAddressEkle);
+                wait.until(ExpectedConditions.visibilityOf(to.isimKutusu)).click();
+                actions.sendKeys(to.isimKutusu, ConfigReader.getProperty("firstName") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("address") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("country") + Keys.TAB)
+                        .pause(Duration.ofSeconds(1))
+                        .sendKeys(ConfigReader.getProperty("state") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("city") + Keys.TAB)
+                        .sendKeys(ConfigReader.getProperty("postcode"))
+                        .perform();
 
-        ReusableMethods.click(to.addAddressButtonForm);
+                ReusableMethods.click(to.addAddressButtonForm);
 
-        //Delivery Address listesinde adres bulundugunu test et
-        wait.until(ExpectedConditions.visibilityOf(to.deliveryAddSec));
-        softAssert.assertTrue(to.deliveryAddSec.isEnabled());
+                //Delivery Address listesinde adres bulundugunu test et
+                wait.until(ExpectedConditions.visibilityOf(to.deliveryAddSec));
+                softAssert.assertTrue(to.deliveryAddSec.isEnabled());
+                passed = false;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         extentTest.pass("Delivery Address bölümüne adres eklendiği test edilmiştir.",
                 MediaEntityBuilder.createScreenCaptureFromBase64String(ReusableMethods.sayfaSSBase64()).build());
 

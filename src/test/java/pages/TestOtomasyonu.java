@@ -137,13 +137,13 @@ public class TestOtomasyonu {
     @FindBy (xpath = "//*[@id='name']")
     public WebElement isimKutusu;
 
-    @FindBy (xpath = "//div[1]/div/div[3]/label/span")
+    @FindBy (xpath = "//div[1]/div/div[3]/label")
     public WebElement ayniAdresSecButonu;
 
-    @FindBy (xpath = "//div[1]/div/div[2]/div/div/div[2]/label/span")
+    @FindBy (xpath = "//div[1]/div/div[2]/div/div/div[2]/label")
     public WebElement billingAddSec;
 
-    @FindBy (xpath = "//div[2]/div/div[2]/div/div/div[2]/label/span")
+    @FindBy (xpath = "//div[2]/div/div[2]/div/div/div[2]/label")
     public WebElement deliveryAddSec;
 
     @FindBy(xpath = "//form/div/div[1]/div[3]/div/div[2]/div[1]/div/div[2]/label")
